@@ -13,12 +13,18 @@ async def send_notify():
     notif=await sqlite_db.sql_check_if_notify()
     datenow=datetime.now()
     for noty in notif:
+        date_plan_split=noty[4].split(' ')
+        date_plan=date_plan_split[0].split('/')
+        date_now_split=datenow.strftime("%d/%m/%Y %H:%M").split(' ')
+        date_now=date_now_split[0].split('/')
         if datenow.strftime("%d/%m/%Y %H:%M")==noty[4]:
             global temp_id
             temp_id=noty[1]
             await bot.send_message(noty[0],f'Пришло время выполнить план:\n{noty[2]}\nДетали: {noty[3]}', reply_markup=InlineKeyboardMarkup().\
             add(InlineKeyboardButton(f'Отметить выполнение', callback_data=f'checkPlans {noty[1]},{noty[2]}')).\
             add(InlineKeyboardButton(f'Отменить план', callback_data=f'delPlan {noty[1]},{noty[2]}')))
+        elif datetime(int(date_plan[2]), int(date_plan[1]), int(date_plan[0]))<datetime(int(date_now[2]),int(date_now[1]),int(date_now[0])):
+            await sqlite_db.sql_delete_plan(noty[1])
 
 async def unset_daily_progress():
     datenow=datetime.now()
