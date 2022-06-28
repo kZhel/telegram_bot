@@ -63,4 +63,4 @@ async def sql_done_habits():
     base.commit()
 
 async def sql_read_users():
-    return cur.execute('select distinct userid from habits').fetchall()
+    return cur.execute('select distinct userid from habits where status=0').fetchall()
